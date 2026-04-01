@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0f1a12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="RootStudio Orders" />
+  <title>RootStudio · Order Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0d1210;
+      --bg2:      #131a15;
+      --bg3:      #1a2318;
+      --card:     #182018;
+      --border:   #243020;
+      --border2:  #2e3e28;
+      --cream:    #e8f0e0;
+      --cream2:   #a8b89a;
+      --cream3:   #607050;
+      --accent:   #6ab04c;
+      --accent2:  #4e8a34;
+      --gold:     #d4a84a;
+      --gold-bg:  rgba(212,168,74,0.12);
+      --gold-bdr: rgba(212,168,74,0.3);
+      --red:      #c05a4a;
+      --red-bg:   rgba(192,90,74,0.12);
+      --red-bdr:  rgba(192,90,74,0.3);
+      --blue:     #5a9ed4;
+      --blue-bg:  rgba(90,158,212,0.12);
+      --blue-bdr: rgba(90,158,212,0.3);
+      --green-bg: rgba(106,176,76,0.12);
+      --green-bdr:rgba(106,176,76,0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--cream);
+      padding-bottom: 48px;
+    }
+
+    /* ── Top Bar ── */
+    .top-bar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 18px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .top-inner {
+      max-width: 520px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand-tag { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+    .brand-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--cream); }
+    .add-btn {
+      background: var(--accent); color: white; border: none;
+      border-radius: 10px; padding: 9px 16px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+    }
+    .add-btn:active { background: var(--accent2); }
+
+    /* ── Stats ── */
+    .stats-wrap { max-width: 520px; margin: 14px auto 0; padding: 0 18px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .stat-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 11px; padding: 10px 8px; text-align: center;
+    }
+    .stat-val { font-size: 20px; font-weight: 700; font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: 3px; }
+    .stat-lbl { font-size: 9px; color: var(--cream3); text-transform: uppercase; letter-spacing: 0.8px; }
+    .c-all   { color: var(--cream); }
+    .c-new   { color: var(--blue); }
+    .c-prog  { color: var(--gold); }
+    .c-done  { color: var(--accent); }
+
+    /* Rekap profit */
+    .rekap-bar {
+      margin-top: 10px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 11px; padding: 12px 14px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .rekap-item { text-align: center; flex: 1; }
+    .rekap-val { font-size: 14px; font-weight: 700; font-family: monospace; }
+    .rekap-lbl { font-size: 9px; color: var(--cream3); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+    .rekap-divider { width: 1px; height: 32px; background: var(--border); }
+
+    /* ── Filter ── */
+    .filter-wrap { max-width: 520px; margin: 12px auto 0; padding: 0 18px; }
+    .filter-row { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      flex-shrink: 0; border-radius: 20px; padding: 6px 14px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border2); background: var(--bg3);
+      color: var(--cream2); transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* ── Orders list ── */
+    .orders-wrap { max-width: 520px; margin: 14px auto 0; padding: 0 18px; }
+    .order-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 15px; margin-bottom: 10px;
+      animation: fadeUp 0.25s ease both;
+      transition: border-color 0.2s;
+    }
+    .order-card.status-baru   { border-left: 3px solid var(--blue); }
+    .order-card.status-proses { border-left: 3px solid var(--gold); }
+    .order-card.status-kirim  { border-left: 3px solid var(--accent); }
+    .order-card.status-selesai{ border-left: 3px solid var(--cream3); opacity: 0.75; }
+    .order-card.status-batal  { border-left: 3px solid var(--red); opacity: 0.6; }
+
+    .order-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+    .order-buyer { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--cream); }
+    .order-item  { font-size: 12px; color: var(--cream2); margin-top: 2px; }
+
+    .status-badge {
+      flex-shrink: 0; border-radius: 20px; padding: 4px 11px;
+      font-size: 11px; font-weight: 700; border: 1px solid;
+    }
+    .badge-baru    { background: var(--blue-bg);  color: var(--blue);   border-color: var(--blue-bdr); }
+    .badge-proses  { background: var(--gold-bg);  color: var(--gold);   border-color: var(--gold-bdr); }
+    .badge-kirim   { background: var(--green-bg); color: var(--accent); border-color: var(--green-bdr);}
+    .badge-selesai { background: rgba(255,255,255,0.05); color: var(--cream3); border-color: var(--border2); }
+    .badge-batal   { background: var(--red-bg);   color: var(--red);    border-color: var(--red-bdr); }
+
+    .order-money {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+    .money-chip {
+      font-size: 12px; padding: 3px 10px; border-radius: 7px;
+      font-family: monospace; font-weight: 600;
+    }
+    .chip-harga   { background: rgba(255,255,255,0.05); color: var(--cream2); }
+    .chip-profit  { background: var(--green-bg); color: var(--accent); }
+    .chip-dp      { background: var(--gold-bg);  color: var(--gold); }
+    .chip-lunas   { background: var(--green-bg); color: var(--accent); }
+    .chip-belum   { background: var(--red-bg);   color: var(--red); }
+
+    .order-meta { font-size: 11px; color: var(--cream3); margin-bottom: 6px; }
+
+    .order-note { font-size: 12px; color: var(--cream3); font-style: italic; margin-bottom: 8px; }
+
+    .order-actions {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      padding-top: 8px; border-top: 1px solid var(--border);
+    }
+    .act-btn {
+      background: none; border: 1px solid var(--border2);
+      color: var(--cream2); border-radius: 7px;
+      padding: 5px 11px; font-size: 11px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      transition: all 0.15s;
+    }
+    .act-btn:active { background: var(--border2); }
+    .act-btn.del { color: var(--red); border-color: var(--red-bdr); }
+    .act-btn.primary { background: var(--accent); color: white; border-color: var(--accent); font-weight: 700; }
+
+    .empty-state {
+      text-align: center; padding: 40px 20px;
+      color: var(--cream3); font-size: 14px;
+      border: 1px dashed var(--border2); border-radius: 14px;
+    }
+    .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+    /* ── Modal ── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      z-index: 200; display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border2);
+      border-radius: 20px 20px 0 0; padding: 22px 18px 40px;
+      width: 100%; max-width: 520px;
+      transform: translateY(30px); transition: transform 0.25s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .overlay.open .modal { transform: translateY(0); }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif; font-size: 20px;
+      font-weight: 700; color: var(--cream); margin-bottom: 18px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      font-size: 11px; font-weight: 700; color: var(--cream2);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 6px; display: block;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; background: var(--bg3);
+      border: 1.5px solid var(--border2); border-radius: 10px;
+      padding: 11px 13px; font-size: 14px; color: var(--cream);
+      font-family: 'DM Sans', sans-serif; outline: none;
+      transition: border-color 0.2s; -webkit-appearance: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-select option { background: var(--bg2); }
+    .form-textarea { resize: none; height: 65px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+    .btn-save {
+      flex: 1; background: var(--accent); color: white; border: none;
+      border-radius: 11px; padding: 13px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+    }
+    .btn-cancel {
+      background: var(--bg3); color: var(--cream2);
+      border: 1px solid var(--border2); border-radius: 11px;
+      padding: 13px 18px; font-size: 15px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="top-inner">
+    <div>
+      <div class="brand-tag">Root Studio</div>
+      <div class="brand-title">Order Tracker</div>
+    </div>
+    <button class="add-btn" onclick="openModal()">＋ Order</button>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-wrap">
+  <div class="stats-grid">
+    <div class="stat-box"><div class="stat-val c-all" id="s-all">0</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-box"><div class="stat-val c-new" id="s-baru">0</div><div class="stat-lbl">Baru</div></div>
+    <div class="stat-box"><div class="stat-val c-prog" id="s-proses">0</div><div class="stat-lbl">Proses</div></div>
+    <div class="stat-box"><div class="stat-val c-done" id="s-selesai">0</div><div class="stat-lbl">Selesai</div></div>
+  </div>
+  <div class="rekap-bar">
+    <div class="rekap-item">
+      <div class="rekap-val" style="color:var(--cream)" id="r-omzet">Rp 0</div>
+      <div class="rekap-lbl">Total Omzet</div>
+    </div>
+    <div class="rekap-divider"></div>
+    <div class="rekap-item">
+      <div class="rekap-val" style="color:var(--accent)" id="r-profit">Rp 0</div>
+      <div class="rekap-lbl">Total Profit</div>
+    </div>
+    <div class="rekap-divider"></div>
+    <div class="rekap-item">
+      <div class="rekap-val" style="color:var(--gold)" id="r-pending">Rp 0</div>
+      <div class="rekap-lbl">Belum Lunas</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter -->
+<div class="filter-wrap">
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('semua', this)">Semua</button>
+    <button class="filter-btn" onclick="setFilter('baru', this)">🔵 Baru</button>
+    <button class="filter-btn" onclick="setFilter('proses', this)">🟡 Proses</button>
+    <button class="filter-btn" onclick="setFilter('kirim', this)">🟢 Dikirim</button>
+    <button class="filter-btn" onclick="setFilter('selesai', this)">✓ Selesai</button>
+    <button class="filter-btn" onclick="setFilter('batal', this)">✕ Batal</button>
+  </div>
+</div>
+
+<!-- Orders -->
+<div class="orders-wrap" id="orders-list"></div>
+
+<!-- Modal -->
+<div class="overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Order Baru</div>
+
+    <div class="form-group">
+      <label class="form-label">Nama Buyer</label>
+      <input class="form-input" id="f-buyer" type="text" placeholder="contoh: Pak Reza" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Produk</label>
+      <input class="form-input" id="f-produk" type="text" placeholder="contoh: Rak Dinding Kayu Jati" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Harga Jual (Rp)</label>
+        <input class="form-input" id="f-harga" type="number" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Modal (Rp)</label>
+        <input class="form-input" id="f-modal" type="number" placeholder="0" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Pembayaran</label>
+      <select class="form-select" id="f-bayar">
+        <option value="belum">Belum Bayar</option>
+        <option value="dp">DP</option>
+        <option value="lunas">Lunas</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Status Order</label>
+        <select class="form-select" id="f-status">
+          <option value="baru">Baru</option>
+          <option value="proses">On Proses</option>
+          <option value="kirim">Dikirim</option>
+          <option value="selesai">Selesai</option>
+          <option value="batal">Batal</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tanggal Order</label>
+        <input class="form-input" id="f-tgl" type="date" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catatan</label>
+      <textarea class="form-textarea" id="f-note" placeholder="alamat, warna, ukuran, dll..."></textarea>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Batal</button>
+      <button class="btn-save" onclick="saveOrder()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let orders = JSON.parse(localStorage.getItem('rs_orders') || '[]');
+  let editId = null;
+  let activeFilter = 'semua';
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+  function save() { localStorage.setItem('rs_orders', JSON.stringify(orders)); }
+
+  function rp(v) { return 'Rp ' + Math.round(v||0).toLocaleString('id-ID'); }
+  function fmtDate(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+  }
+
+  const STATUS_LABEL = { baru:'Baru', proses:'On Proses', kirim:'Dikirim', selesai:'Selesai', batal:'Batal' };
+  const STATUS_BADGE = { baru:'badge-baru', proses:'badge-proses', kirim:'badge-kirim', selesai:'badge-selesai', batal:'badge-batal' };
+  const STATUS_NEXT  = { baru:'proses', proses:'kirim', kirim:'selesai' };
+  const STATUS_NEXT_LABEL = { baru:'→ Proses', proses:'→ Kirim', kirim:'→ Selesai' };
+
+  // ── Render ──────────────────────────────────────────
+  function render() {
+    // stats
+    const active = orders.filter(o => o.status !== 'batal');
+    document.getElementById('s-all').textContent    = active.length;
+    document.getElementById('s-baru').textContent   = orders.filter(o=>o.status==='baru').length;
+    document.getElementById('s-proses').textContent = orders.filter(o=>o.status==='proses').length;
+    document.getElementById('s-selesai').textContent= orders.filter(o=>o.status==='selesai').length;
+
+    const omzet  = active.reduce((s,o) => s + (Number(o.harga)||0), 0);
+    const profit = active.reduce((s,o) => s + ((Number(o.harga)||0)-(Number(o.modal)||0)), 0);
+    const pending= orders.filter(o=>o.bayar!=='lunas'&&o.status!=='batal').reduce((s,o)=>s+(Number(o.harga)||0),0);
+    document.getElementById('r-omzet').textContent  = rp(omzet);
+    document.getElementById('r-profit').textContent = rp(profit);
+    document.getElementById('r-pending').textContent= rp(pending);
+
+    // list
+    const filtered = activeFilter === 'semua' ? orders : orders.filter(o => o.status === activeFilter);
+    const list = document.getElementById('orders-list');
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div>${activeFilter === 'semua' ? 'Belum ada orderan masuk.<br>Tap <b>＋ Order</b> untuk mulai.' : 'Tidak ada order dengan status ini.'}</div>
+      </div>`;
+      return;
+    }
+
+    // sort terbaru dulu
+    const sorted = [...filtered].sort((a,b) => (b.tgl||'') > (a.tgl||'') ? 1 : -1);
+
+    list.innerHTML = sorted.map((o, i) => {
+      const profit = (Number(o.harga)||0) - (Number(o.modal)||0);
+      const bayarChip = o.bayar === 'lunas'
+        ? `<span class="money-chip chip-lunas">✓ Lunas</span>`
+        : o.bayar === 'dp'
+        ? `<span class="money-chip chip-dp">DP</span>`
+        : `<span class="money-chip chip-belum">Belum Bayar</span>`;
+
+      const nextBtn = STATUS_NEXT[o.status]
+        ? `<button class="act-btn primary" onclick="nextStatus('${o.id}')">
+            ${STATUS_NEXT_LABEL[o.status]}
+           </button>`
+        : '';
+
+      return `
+        <div class="order-card status-${o.status}" style="animation-delay:${i*0.04}s">
+          <div class="order-top">
+            <div>
+              <div class="order-buyer">${o.buyer}</div>
+              <div class="order-item">${o.produk}</div>
+            </div>
+            <span class="status-badge ${STATUS_BADGE[o.status]}">${STATUS_LABEL[o.status]}</span>
+          </div>
+          <div class="order-money">
+            <span class="money-chip chip-harga">${rp(o.harga)}</span>
+            ${o.modal ? `<span class="money-chip chip-profit">+${rp(profit)}</span>` : ''}
+            ${bayarChip}
+          </div>
+          ${o.tgl ? `<div class="order-meta">📅 ${fmtDate(o.tgl)}</div>` : ''}
+          ${o.note ? `<div class="order-note">💬 ${o.note}</div>` : ''}
+          <div class="order-actions">
+            ${nextBtn}
+            ${o.bayar !== 'lunas' && o.status !== 'batal'
+              ? `<button class="act-btn" onclick="tandaiLunas('${o.id}')">💰 Lunas</button>` : ''}
+            <button class="act-btn" onclick="openEdit('${o.id}')">✏ Edit</button>
+            <button class="act-btn del" onclick="hapus('${o.id}')">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── Actions ──────────────────────────────────────────
+  function nextStatus(id) {
+    const o = orders.find(o=>o.id===id);
+    if (o && STATUS_NEXT[o.status]) { o.status = STATUS_NEXT[o.status]; save(); render(); }
+  }
+
+  function tandaiLunas(id) {
+    const o = orders.find(o=>o.id===id);
+    if (o) { o.bayar = 'lunas'; save(); render(); }
+  }
+
+  function hapus(id) {
+    if (!confirm('Hapus order ini?')) return;
+    orders = orders.filter(o=>o.id!==id);
+    save(); render();
+  }
+
+  function setFilter(f, btn) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+
+  // ── Modal ────────────────────────────────────────────
+  function openModal() {
+    editId = null;
+    document.getElementById('modal-title').textContent = 'Order Baru';
+    document.getElementById('f-buyer').value = '';
+    document.getElementById('f-produk').value = '';
+    document.getElementById('f-harga').value = '';
+    document.getElementById('f-modal').value = '';
+    document.getElementById('f-bayar').value = 'belum';
+    document.getElementById('f-status').value = 'baru';
+    document.getElementById('f-tgl').value = new Date().toISOString().split('T')[0];
+    document.getElementById('f-note').value = '';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function openEdit(id) {
+    const o = orders.find(o=>o.id===id);
+    if (!o) return;
+    editId = id;
+    document.getElementById('modal-title').textContent = 'Edit Order';
+    document.getElementById('f-buyer').value  = o.buyer;
+    document.getElementById('f-produk').value = o.produk;
+    document.getElementById('f-harga').value  = o.harga || '';
+    document.getElementById('f-modal').value  = o.modal || '';
+    document.getElementById('f-bayar').value  = o.bayar;
+    document.getElementById('f-status').value = o.status;
+    document.getElementById('f-tgl').value    = o.tgl || '';
+    document.getElementById('f-note').value   = o.note || '';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    editId = null;
+  }
+
+  function saveOrder() {
+    const buyer  = document.getElementById('f-buyer').value.trim();
+    const produk = document.getElementById('f-produk').value.trim();
+    const harga  = document.getElementById('f-harga').value;
+    const modal  = document.getElementById('f-modal').value;
+    const bayar  = document.getElementById('f-bayar').value;
+    const status = document.getElementById('f-status').value;
+    const tgl    = document.getElementById('f-tgl').value;
+    const note   = document.getElementById('f-note').value.trim();
+
+    if (!buyer)  { alert('Nama buyer wajib diisi'); return; }
+    if (!produk) { alert('Nama produk wajib diisi'); return; }
+
+    if (editId) {
+      const o = orders.find(o=>o.id===editId);
+      if (o) Object.assign(o, { buyer, produk, harga, modal, bayar, status, tgl, note });
+    } else {
+      orders.unshift({ id: uid(), buyer, produk, harga, modal, bayar, status, tgl, note });
+    }
+    save(); closeModal(); render();
+  }
+
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#1e1a14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="RootStudio Crew" />
+  <title>RootStudio · Crew Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #141210;
+      --bg2: #1e1a14;
+      --bg3: #2a2318;
+      --card: #242018;
+      --border: #3a3020;
+      --border2: #4a3f28;
+      --cream: #f5e8d0;
+      --cream2: #c9b89a;
+      --cream3: #8a7560;
+      --accent: #d4954a;
+      --accent2: #b8782e;
+      --green: #5a9e6f;
+      --green-bg: rgba(90,158,111,0.12);
+      --green-border: rgba(90,158,111,0.3);
+      --orange-bg: rgba(212,149,74,0.12);
+      --orange-border: rgba(212,149,74,0.3);
+      --red: #c0614a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--cream);
+      padding-bottom: 40px;
+    }
+
+    /* Header */
+    .top-bar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 18px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .top-bar-inner {
+      max-width: 520px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand { display: flex; flex-direction: column; }
+    .brand-tag {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 1px;
+    }
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--cream);
+    }
+    .add-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .add-btn:active { background: var(--accent2); }
+
+    /* Stats bar */
+    .stats-bar {
+      max-width: 520px;
+      margin: 14px auto 0;
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .stat-pill {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .stat-pill-val {
+      font-size: 22px;
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+    .stat-pill-label { font-size: 10px; color: var(--cream3); text-transform: uppercase; letter-spacing: 1px; }
+    .val-total { color: var(--cream); }
+    .val-progress { color: var(--accent); }
+    .val-done { color: var(--green); }
+
+    /* Main */
+    .main { max-width: 520px; margin: 18px auto 0; padding: 0 18px; }
+
+    /* Crew section */
+    .crew-section { margin-bottom: 18px; animation: fadeUp 0.3s ease both; }
+    .crew-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .crew-info { display: flex; align-items: center; gap: 10px; }
+    .crew-avatar {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      flex-shrink: 0;
+    }
+    .crew-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+    .crew-count {
+      font-size: 11px;
+      color: var(--cream3);
+      margin-top: 1px;
+    }
+    .crew-right { display: flex; align-items: center; gap: 8px; }
+    .crew-add-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      color: var(--cream2);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .crew-add-btn:active { background: var(--border2); }
+    .chevron { color: var(--cream3); font-size: 13px; transition: transform 0.2s; }
+    .chevron.open { transform: rotate(180deg); }
+
+    /* Job cards */
+    .jobs-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .job-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 14px;
+      transition: all 0.2s;
+      animation: fadeUp 0.25s ease both;
+    }
+    .job-card.done {
+      border-color: var(--green-border);
+      background: rgba(90,158,111,0.06);
+    }
+    .job-card.progress {
+      border-color: var(--orange-border);
+      background: rgba(212,149,74,0.06);
+    }
+
+    .job-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .job-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1.3;
+      flex: 1;
+    }
+    .job-card.done .job-name {
+      text-decoration: line-through;
+      color: var(--cream3);
+    }
+
+    .status-toggle {
+      flex-shrink: 0;
+      border: none;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    .status-toggle.progress {
+      background: var(--orange-bg);
+      color: var(--accent);
+      border: 1px solid var(--orange-border);
+    }
+    .status-toggle.done {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+
+    .job-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .meta-chip {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .chip-deadline {
+      background: rgba(255,255,255,0.05);
+      color: var(--cream2);
+      border: 1px solid var(--border);
+    }
+    .chip-deadline.overdue {
+      background: rgba(192,97,74,0.15);
+      color: var(--red);
+      border-color: rgba(192,97,74,0.3);
+    }
+    .chip-deadline.soon {
+      background: rgba(212,149,74,0.12);
+      color: var(--accent);
+      border-color: var(--orange-border);
+    }
+
+    .job-note {
+      font-size: 12px;
+      color: var(--cream3);
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    .job-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .action-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--cream3);
+      border-radius: 7px;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .action-btn:active { background: var(--border); }
+    .action-btn.del { color: var(--red); border-color: rgba(192,97,74,0.3); }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: var(--cream3);
+      font-size: 13px;
+      font-style: italic;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px 36px;
+      width: 100%;
+      max-width: 520px;
+      transform: translateY(30px);
+      transition: transform 0.25s ease;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 20px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cream2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 7px;
+      display: block;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1.5px solid var(--border2);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 14px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent);
+    }
+    .form-select option { background: var(--bg2); }
+    .form-textarea { resize: none; height: 70px; }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-save {
+      flex: 1;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 11px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.2s;
+    }
+    .btn-save:active { background: var(--accent2); }
+    .btn-cancel {
+      background: var(--bg3);
+      color: var(--cream2);
+      border: 1px solid var(--border2);
+      border-radius: 11px;
+      padding: 13px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Crew modal */
+    .crew-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .crew-modal-overlay.open { opacity: 1; pointer-events: all; }
+    .crew-modal-overlay.open .modal { transform: translateY(0); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 0 14px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <div class="brand">
+      <span class="brand-tag">Root Studio</span>
+      <span class="brand-title">Crew Tracker</span>
+    </div>
+    <button class="add-btn" onclick="openAddJob()">＋ Tambah Job</button>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-bar" id="stats-bar">
+  <div class="stat-pill">
+    <div class="stat-pill-val val-total" id="stat-total">0</div>
+    <div class="stat-pill-label">Total Job</div>
+  </div>
+  <div class="stat-pill">
+    <div class="stat-pill-val val-progress" id="stat-progress">0</div>
+    <div class="stat-pill-label">On Progress</div>
+  </div>
+  <div class="stat-pill">
+    <div class="stat-pill-val val-done" id="stat-done">0</div>
+    <div class="stat-pill-label">Selesai</div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main" id="main-content"></div>
+
+<!-- Add Job Modal -->
+<div class="modal-overlay" id="job-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Tambah Job Baru</div>
+    <div class="form-group">
+      <label class="form-label">Pengrajin</label>
+      <select class="form-select" id="f-crew"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nama Barang</label>
+      <input class="form-input" id="f-item" type="text" placeholder="contoh: Rak Dinding Kayu Jati" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deadline</label>
+      <input class="form-input" id="f-deadline" type="date" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catatan</label>
+      <textarea class="form-textarea" id="f-note" placeholder="ukuran, warna, instruksi khusus..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeJobModal()">Batal</button>
+      <button class="btn-save" onclick="saveJob()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Crew Modal -->
+<div class="crew-modal-overlay" id="crew-modal">
+  <div class="modal">
+    <div class="modal-title">Tambah Pengrajin</div>
+    <div class="form-group">
+      <label class="form-label">Nama Pengrajin</label>
+      <input class="form-input" id="f-crewname" type="text" placeholder="contoh: Pak Budi" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCrewModal()">Batal</button>
+      <button class="btn-save" onclick="saveCrew()">Tambah</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Data ──────────────────────────────────────────────
+  const COLORS = [
+    { bg: 'rgba(212,149,74,0.2)', color: '#d4954a' },
+    { bg: 'rgba(90,158,111,0.2)', color: '#5a9e6f' },
+    { bg: 'rgba(100,140,200,0.2)', color: '#6a9fd8' },
+    { bg: 'rgba(180,100,160,0.2)', color: '#c47ab8' },
+    { bg: 'rgba(200,160,80,0.2)', color: '#c8a050' },
+    { bg: 'rgba(90,170,180,0.2)', color: '#5aaab4' },
+    { bg: 'rgba(180,90,90,0.2)', color: '#c46a6a' },
+  ];
+
+  let crew = JSON.parse(localStorage.getItem('rs_crew') || '[]');
+  let jobs = JSON.parse(localStorage.getItem('rs_jobs') || '[]');
+  let editingJobId = null;
+  let addingForCrew = null;
+
+  function save() {
+    localStorage.setItem('rs_crew', JSON.stringify(crew));
+    localStorage.setItem('rs_jobs', JSON.stringify(jobs));
+  }
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  // ── Init default crew ──────────────────────────────────
+  if (crew.length === 0) {
+    crew = [
+      { id: uid(), name: 'Pak Budi' },
+      { id: uid(), name: 'Pak Andi' },
+    ];
+    save();
+  }
+
+  // ── Render ────────────────────────────────────────────
+  function render() {
+    const container = document.getElementById('main-content');
+    container.innerHTML = '';
+
+    let totalJobs = jobs.length;
+    let progressJobs = jobs.filter(j => j.status === 'progress').length;
+    let doneJobs = jobs.filter(j => j.status === 'done').length;
+    document.getElementById('stat-total').textContent = totalJobs;
+    document.getElementById('stat-progress').textContent = progressJobs;
+    document.getElementById('stat-done').textContent = doneJobs;
+
+    if (crew.length === 0) {
+      container.innerHTML = `<div class="empty-state" style="margin-top:30px">
+        Belum ada pengrajin.<br>Tap <b>Tambah Job</b> untuk mulai.
+      </div>`;
+      return;
+    }
+
+    crew.forEach((c, ci) => {
+      const crewJobs = jobs.filter(j => j.crewId === c.id);
+      const col = COLORS[ci % COLORS.length];
+
+      const section = document.createElement('div');
+      section.className = 'crew-section';
+      section.style.animationDelay = (ci * 0.05) + 's';
+
+      const doneCount = crewJobs.filter(j => j.status === 'done').length;
+      const progCount = crewJobs.filter(j => j.status === 'progress').length;
+
+      section.innerHTML = `
+        <div class="crew-header" onclick="toggleSection('jobs-${c.id}', 'chev-${c.id}')">
+          <div class="crew-info">
+            <div class="crew-avatar" style="background:${col.bg};color:${col.color}">
+              ${c.name.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <div class="crew-name">${c.name}</div>
+              <div class="crew-count">${crewJobs.length} job · ${progCount} progress · ${doneCount} selesai</div>
+            </div>
+          </div>
+          <div class="crew-right">
+            <button class="crew-add-btn" onclick="event.stopPropagation(); openAddJobForCrew('${c.id}')">＋ Job</button>
+            <span class="chevron open" id="chev-${c.id}">▼</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="jobs-list" id="jobs-${c.id}">
+          ${crewJobs.length === 0
+            ? `<div class="empty-state">Belum ada job untuk ${c.name}</div>`
+            : crewJobs.map(j => renderJob(j)).join('')
+          }
+        </div>
+      `;
+      container.appendChild(section);
+    });
+  }
+
+  function renderJob(j) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    let deadlineChip = '';
+    if (j.deadline) {
+      const dl = new Date(j.deadline);
+      dl.setHours(0,0,0,0);
+      const diff = Math.ceil((dl - today) / 86400000);
+      let cls = 'chip-deadline';
+      let label = formatDate(j.deadline);
+      if (j.status !== 'done') {
+        if (diff < 0) { cls += ' overdue'; label = '⚠ Telat ' + Math.abs(diff) + 'h'; }
+        else if (diff <= 2) { cls += ' soon'; label = '⏰ ' + (diff === 0 ? 'Hari ini' : diff + ' hari lagi'); }
+      }
+      deadlineChip = `<span class="meta-chip ${cls}">📅 ${label}</span>`;
+    }
+
+    return `
+      <div class="job-card ${j.status}" id="job-${j.id}">
+        <div class="job-top">
+          <div class="job-name">${j.item}</div>
+          <button class="status-toggle ${j.status}" onclick="toggleStatus('${j.id}')">
+            ${j.status === 'progress' ? '⚙ On Progress' : '✓ Finish'}
+          </button>
+        </div>
+        ${deadlineChip || j.note ? `
+        <div class="job-meta">
+          ${deadlineChip}
+        </div>` : ''}
+        ${j.note ? `<div class="job-note">💬 ${j.note}</div>` : ''}
+        <div class="job-actions">
+          <button class="action-btn" onclick="openEditJob('${j.id}')">✏ Edit</button>
+          <button class="action-btn del" onclick="deleteJob('${j.id}')">🗑 Hapus</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function formatDate(d) {
+    const dt = new Date(d);
+    return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function toggleSection(id, chevId) {
+    const el = document.getElementById(id);
+    const ch = document.getElementById(chevId);
+    if (el.style.display === 'none') {
+      el.style.display = 'flex';
+      ch.classList.add('open');
+    } else {
+      el.style.display = 'none';
+      ch.classList.remove('open');
+    }
+  }
+
+  // ── Job Actions ───────────────────────────────────────
+  function toggleStatus(id) {
+    const j = jobs.find(j => j.id === id);
+    if (!j) return;
+    j.status = j.status === 'progress' ? 'done' : 'progress';
+    save(); render();
+  }
+
+  function deleteJob(id) {
+    if (!confirm('Hapus job ini?')) return;
+    jobs = jobs.filter(j => j.id !== id);
+    save(); render();
+  }
+
+  function openEditJob(id) {
+    const j = jobs.find(j => j.id === id);
+    if (!j) return;
+    editingJobId = id;
+    populateCrewSelect(j.crewId);
+    document.getElementById('f-item').value = j.item;
+    document.getElementById('f-deadline').value = j.deadline || '';
+    document.getElementById('f-note').value = j.note || '';
+    document.getElementById('modal-title').textContent = 'Edit Job';
+    document.getElementById('job-modal').classList.add('open');
+  }
+
+  // ── Job Modal ─────────────────────────────────────────
+  function openAddJob(crewId) {
+    editingJobId = null;
+    addingForCrew = crewId || null;
+    populateCrewSelect(crewId || (crew[0] && crew[0].id));
+    document.getElementById('f-item').value = '';
+    document.getElementById('f-deadline').value = '';
+    document.getElementById('f-note').value = '';
+    document.getElementById('modal-title').textContent = 'Tambah Job Baru';
+    document.getElementById('job-modal').classList.add('open');
+  }
+
+  function openAddJobForCrew(crewId) {
+    openAddJob(crewId);
+  }
+
+  function closeJobModal() {
+    document.getElementById('job-modal').classList.remove('open');
+    editingJobId = null; addingForCrew = null;
+  }
+
+  function populateCrewSelect(selectedId) {
+    const sel = document.getElementById('f-crew');
+    sel.innerHTML = crew.map(c =>
+      `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.name}</option>`
+    ).join('');
+  }
+
+  function saveJob() {
+    const crewId = document.getElementById('f-crew').value;
+    const item = document.getElementById('f-item').value.trim();
+    const deadline = document.getElementById('f-deadline').value;
+    const note = document.getElementById('f-note').value.trim();
+    if (!item) { alert('Nama barang wajib diisi'); return; }
+    if (!crewId) { alert('Pilih pengrajin'); return; }
+
+    if (editingJobId) {
+      const j = jobs.find(j => j.id === editingJobId);
+      if (j) { j.crewId = crewId; j.item = item; j.deadline = deadline; j.note = note; }
+    } else {
+      jobs.push({ id: uid(), crewId, item, deadline, note, status: 'progress' });
+    }
+    save(); closeJobModal(); render();
+  }
+
+  // ── Crew Modal ────────────────────────────────────────
+  function openCrewModal() {
+    document.getElementById('f-crewname').value = '';
+    document.getElementById('crew-modal').classList.add('open');
+  }
+  function closeCrewModal() {
+    document.getElementById('crew-modal').classList.remove('open');
+  }
+  function saveCrew() {
+    const name = document.getElementById('f-crewname').value.trim();
+    if (!name) { alert('Nama pengrajin wajib diisi'); return; }
+    if (crew.length >= 7) { alert('Maksimal 7 pengrajin'); return; }
+    crew.push({ id: uid(), name });
+    save(); closeCrewModal(); render();
+  }
+
+  // close modal on overlay click
+  document.getElementById('job-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeJobModal();
+  });
+  document.getElementById('crew-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeCrewModal();
+  });
+
+  // Add crew button — inject into top bar area
+  const topInner = document.querySelector('.top-bar-inner');
+  const crewBtn = document.createElement('button');
+  crewBtn.className = 'add-btn';
+  crewBtn.style.background = 'var(--bg3)';
+  crewBtn.style.border = '1px solid var(--border2)';
+  crewBtn.style.color = 'var(--cream2)';
+  crewBtn.style.fontSize = '12px';
+  crewBtn.style.marginRight = '8px';
+  crewBtn.innerHTML = '👤 + Kru';
+  crewBtn.onclick = openCrewModal;
+  topInner.insertBefore(crewBtn, topInner.lastElementChild);
+
+  // ── Init ──────────────────────────────────────────────
+  render();
+</script>
+</body>
+</html>

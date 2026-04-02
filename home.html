@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0e0c09" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="FormaGriya" />
+  <title>FormaGriya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #0e0c09;
+      --bg2:     #161310;
+      --bg3:     #1e1a14;
+      --border:  #2e2820;
+      --border2: #3e3628;
+      --cream:   #f0e8d8;
+      --cream2:  #b8a888;
+      --cream3:  #786858;
+      --gold:    #c8a050;
+      --gold2:   #a07830;
+      --gold-glow: rgba(200,160,80,0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--cream);
+      min-height: 100vh;
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+    }
+
+    /* Ambient background */
+    .ambient {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      overflow: hidden;
+    }
+    .ambient-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.18;
+    }
+    .orb1 { width: 300px; height: 300px; background: #c8a050; top: -80px; right: -60px; animation: drift1 12s ease-in-out infinite alternate; }
+    .orb2 { width: 200px; height: 200px; background: #6a4820; bottom: 100px; left: -60px; animation: drift2 15s ease-in-out infinite alternate; }
+    .orb3 { width: 150px; height: 150px; background: #c8a050; bottom: 40%; right: -40px; animation: drift1 18s ease-in-out infinite alternate-reverse; opacity: 0.08; }
+
+    @keyframes drift1 { from { transform: translateY(0) scale(1); } to { transform: translateY(30px) scale(1.1); } }
+    @keyframes drift2 { from { transform: translateX(0) scale(1); } to { transform: translateX(20px) scale(1.08); } }
+
+    /* Grain */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    /* Content */
+    .container {
+      position: relative; z-index: 2;
+      max-width: 420px; margin: 0 auto;
+      padding: 0 22px 48px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding-top: 56px;
+      padding-bottom: 40px;
+      text-align: center;
+      animation: heroIn 0.8s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .logo-mark {
+      width: 64px; height: 64px;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+    .logo-mark svg { width: 100%; height: 100%; }
+
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px; font-weight: 600;
+      color: var(--cream);
+      letter-spacing: -0.5px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .brand-name em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .brand-tagline {
+      font-size: 11px; letter-spacing: 3.5px;
+      text-transform: uppercase; color: var(--cream3);
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+
+    .divider-line {
+      width: 40px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 20px;
+    }
+
+    .greeting {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px; font-style: italic;
+      color: var(--cream2);
+    }
+
+    /* ── Date chip ── */
+    .date-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(200,160,80,0.08);
+      border: 1px solid rgba(200,160,80,0.2);
+      border-radius: 20px; padding: 6px 16px;
+      font-size: 12px; color: var(--gold);
+      margin-top: 14px;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .date-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--cream3); font-weight: 500;
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* ── App grid ── */
+    .app-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .app-card {
+      position: relative;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 16px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.2s;
+      animation: fadeUp 0.5s ease both;
+    }
+    .app-card:active { transform: scale(0.96); }
+    .app-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 80% 20%, var(--card-glow, rgba(200,160,80,0.08)), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .app-card:active::before { opacity: 1; }
+
+    .app-card.wide {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+    }
+
+    .app-icon {
+      width: 44px; height: 44px;
+      border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .app-card.wide .app-icon { margin-bottom: 0; }
+
+    .app-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px; font-weight: 600;
+      color: var(--cream); margin-bottom: 4px;
+      line-height: 1.2;
+    }
+    .app-desc {
+      font-size: 11px; color: var(--cream3);
+      line-height: 1.4;
+    }
+
+    .app-arrow {
+      position: absolute; bottom: 16px; right: 16px;
+      font-size: 14px; color: var(--border2);
+      transition: color 0.2s, transform 0.2s;
+    }
+    .app-card:active .app-arrow { color: var(--gold); transform: translateX(3px); }
+    .app-card.wide .app-arrow { position: static; margin-left: auto; flex-shrink: 0; }
+
+    /* Color themes per card */
+    .theme-gold   { --card-glow: rgba(200,160,80,0.12); }
+    .theme-sage   { --card-glow: rgba(80,160,120,0.12); }
+    .theme-teal   { --card-glow: rgba(60,160,180,0.12); }
+    .theme-rose   { --card-glow: rgba(180,80,100,0.12); }
+    .theme-slate  { --card-glow: rgba(100,130,180,0.12); }
+
+    .icon-gold  { background: rgba(200,160,80,0.12); }
+    .icon-sage  { background: rgba(80,160,120,0.12); }
+    .icon-teal  { background: rgba(60,160,180,0.12); }
+    .icon-rose  { background: rgba(180,80,100,0.12); }
+    .icon-slate { background: rgba(100,130,180,0.12); }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding-top: 32px;
+      animation: fadeUp 0.6s 0.5s ease both;
+    }
+    .footer-line {
+      width: 30px; height: 1px;
+      background: var(--border2);
+      margin: 0 auto 14px;
+    }
+    .footer-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px; font-style: italic;
+      color: var(--cream3);
+    }
+    .footer-ver {
+      font-size: 10px; color: var(--border2);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="ambient-orb orb1"></div>
+  <div class="ambient-orb orb2"></div>
+  <div class="ambient-orb orb3"></div>
+</div>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="logo-mark">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="38" width="48" height="6" rx="2" fill="#c8a050" opacity="0.9"/>
+        <rect x="14" y="28" width="36" height="6" rx="2" fill="#c8a050" opacity="0.65"/>
+        <rect x="20" y="18" width="24" height="6" rx="2" fill="#c8a050" opacity="0.4"/>
+        <rect x="12" y="44" width="5" height="10" rx="2" fill="#786858"/>
+        <rect x="47" y="44" width="5" height="10" rx="2" fill="#786858"/>
+      </svg>
+    </div>
+    <div class="brand-name">Forma<em>Griya</em></div>
+    <div class="brand-tagline">Business Suite</div>
+    <div class="divider-line"></div>
+    <div class="greeting">Kelola bisnis furniturmu dengan elegan</div>
+    <div class="date-chip">
+      <div class="date-dot"></div>
+      <span id="date-now">—</span>
+    </div>
+  </div>
+
+  <!-- Apps -->
+  <div class="section-label">Aplikasi</div>
+
+  <div class="app-grid">
+
+    <!-- Kalkulator — wide -->
+    <a class="app-card wide theme-gold" href="index.html" style="animation-delay:0.05s">
+      <div class="app-icon icon-gold">📊</div>
+      <div>
+        <div class="app-title">Kalkulator Harga</div>
+        <div class="app-desc">Hitung margin & harga jual per orderan dengan mode fase pengenalan & normal</div>
+      </div>
+      <div class="app-arrow">→</div>
+    </a>
+
+    <!-- Order Tracker -->
+    <a class="app-card theme-teal" href="order-tracker.html" style="animation-delay:0.1s">
+      <div class="app-icon icon-teal">📋</div>
+      <div class="app-title">Order Tracker</div>
+      <div class="app-desc">Catat & pantau semua orderan masuk</div>
+      <div class="app-arrow">→</div>
+    </a>
+
+    <!-- Crew Tracker -->
+    <a class="app-card theme-sage" href="crew-tracker.html" style="animation-delay:0.15s">
+      <div class="app-icon icon-sage">👷</div>
+      <div class="app-title">Crew Tracker</div>
+      <div class="app-desc">Pantau progress pengrajin per job</div>
+      <div class="app-arrow">→</div>
+    </a>
+
+    <!-- Invoice -->
+    <a class="app-card theme-rose" href="invoice.html" style="animation-delay:0.2s">
+      <div class="app-icon icon-rose">🧾</div>
+      <div class="app-title">Invoice</div>
+      <div class="app-desc">Buat & share nota ke buyer via WA</div>
+      <div class="app-arrow">→</div>
+    </a>
+
+    <!-- Rekap Keuangan -->
+    <a class="app-card theme-slate" href="rekap.html" style="animation-delay:0.25s">
+      <div class="app-icon icon-slate">💰</div>
+      <div class="app-title">Rekap Keuangan</div>
+      <div class="app-desc">Omzet, profit & laporan bulanan</div>
+      <div class="app-arrow">→</div>
+    </a>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-line"></div>
+    <div class="footer-text">Handcrafted furniture, handcrafted tools.</div>
+    <div class="footer-ver">FormaGriya · v1.0</div>
+  </div>
+
+</div>
+
+<script>
+  // Live date
+  function updateDate() {
+    const now = new Date();
+    const label = now.toLocaleDateString('id-ID', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+    document.getElementById('date-now').textContent = label;
+  }
+  updateDate();
+</script>
+</body>
+</html>
